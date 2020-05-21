@@ -1,0 +1,191 @@
+% !TEX TS-program = latexmk -xelatex -shell-escape -silent -latexoption="-synctex=1" -f %
+% !TEX encoding = UTF-8 Unicode
+\documentclass[]{standalone}
+
+\usepackage{amsmath,amssymb,csquotes,mathtools,makecell,tabularx,threeparttable}
+\usepackage[
+	type={CC},
+	modifier={by-sa},
+	version={4.0}
+]{doclicense}
+
+\DeclareMathOperator\com{com}
+
+\begin{filecontents}[overwrite]{bibliography.bib}
+@misc{wiki:zero-knowledge-proofs-hamiltonian-graphs,
+	author = "{Wikipedia contributors}",
+	title = "Zero-knowledge proofs (Hamiltonian cycle for a large graph)--- {W}ikipedia{,} The Free Encyclopedia",
+	year = "2020",
+	url = "https://en.wikipedia.org/w/index.php?title=Zero-knowledge_proof&oldid=957331895#Hamiltonian_cycle_for_a_large_graph",
+	note = "[Online; accessed 2020-05-21]"
+}
+@misc{wiki:zero-knowledge-proofs-discrete-log,
+	author = "{Wikipedia contributors}",
+	title = "Zero-knowledge proofs (Discrete log of a given value) --- {W}ikipedia{,} The Free Encyclopedia",
+	year = "2020",
+	url = "https://en.wikipedia.org/w/index.php?title=Zero-knowledge_proof&oldid=957331895#Discrete_log_of_a_given_value",
+	note = "[Online; accessed 2020-05-21]"
+}
+@InProceedings{SchnorrZeroKnowledge,
+	author="Schnorr, C. P.",
+	editor="Brassard, Gilles",
+	title="Efficient Identification and Signatures for Smart Cards",
+	booktitle="Advances in Cryptology --- CRYPTO' 89 Proceedings",
+	year="1990",
+	publisher="Springer New York",
+	address="New York, NY",
+	pages="239--252",
+	abstract="We present an efficient interactive identification scheme and a related signature scheme that are based on discrete logarithms and which are particularly suited for smart cards. Previous cryptoschemes, based on the discrete logarithm, have been proposed by El Gamal (1985), Chaum, Evertse, Graaf (1988), Beth (1988) and G{\"u}nter (1989). The new scheme comprises the following novel features.",
+	isbn="978-0-387-34805-6"
+}
+\end{filecontents}
+
+\usepackage[
+	backend=biber,
+	style=alphabetic,
+	citestyle=alphabetic,
+	sortlocale=en_US,
+	url=true,
+	doi=true,
+	eprint=false
+]{biblatex}
+
+\addbibresource{bibliography.bib}
+
+\usepackage{hyperref}
+
+\begin{document}
+
+\newcommand\sudoku{\Psi}
+\newcommand\sudokuP{\Psi'}
+\newcommand\sudokuSolution{\overline{\Psi}}
+\newcommand\sudokuSolutionP{\overline{\Psi'}}
+
+\newcommand\graph{G}
+\newcommand\graphSolution{v}
+\newcommand\graphP{G'}
+\newcommand\graphSolutionP{v'}
+
+\newcommand\numberOfIters{\#\text{iter}}
+
+\renewcommand\theadfont{\bfseries}
+
+\newcommand{\centeredCell}[1]{\centering#1\arraybackslash}
+
+\newcommand\response{\text{resp.}}
+
+\begin{threeparttable}
+\begin{tabularx}{30cm}{m{4cm}|m{6cm}|m{6cm}|m{6cm}|m{6cm}}
+	\hline
+	& \thead{Sudoku} & \thead{Hamiltonian Cycle} & \thead{Discrete Log (variant)} & \thead{Discrete Log (Schnorr variant)}\\
+	\hline
+	\thead{Statement}
+		
+	\centeredCell{public or sent from $P$ to $V$} & \centeredCell{Partial sudoku $\sudoku$ is solvable} & \centeredCell{Graph $\graph$ is Hamiltonian\tnote{1}} & Let $\mathbb{G}$ of order $q$ and $y \in \mathbb{Z}_q$ be fixed.\vspace{1em}
+	
+	\centeredCell{I know $x \in \mathbb{Z}_{q}$ such that \[[x] = y\]} & Let $\mathbb{G}$ of order $q$ and $y \in \mathbb{G}$ be fixed.\vspace{1em}
+	
+	\centeredCell{I know $x \in \mathbb{Z}_{q}$ such that \[[x] = y\]} \\
+	\hline
+	\thead{Witness}
+	
+	\centeredCell{only known to $P$} & \centeredCell{Solution $\sudokuSolution$} & \centeredCell{Hamiltonian cycle $\graphSolution$} & \centeredCell{$x$} & \centeredCell{$x$}\\
+	\hline\hline
+	\thead{Iteration} & &\\
+	\hline
+	1. Rerandomization by $P$ of\begin{enumerate}
+		\item Problem Statement
+		\item Solution
+	\end{enumerate} & Pick set isomorphism $i$ on $\{1,\ldots,9\}$\begin{enumerate}
+		\item $\sudokuP := i[\sudoku]$ is solvable
+		\item $\sudokuSolutionP := i[\sudokuSolution]$ is solution to $\sudokuP$
+	\end{enumerate} & Pick graph isomorphism $i\colon\graph \to \graphP$ (just relabel vertices)\begin{enumerate}
+		\item $\graphP := i[\graph]$ is Hamiltonian
+		\item $\graphSolutionP := i[\graphSolution]$ is Hamiltonian cycle for $\graphP$\tnote{2}
+	\end{enumerate} & Pick $r \leftarrow \mathbb{Z}_{q}$ uniformly at random & Pick $r \leftarrow \mathbb{Z}_{q}$ uniformly at random \\
+	\hline
+	2. Commitment by $P$& Send all of\begin{itemize}
+		\item $\left(\com(\Psi_{i,j})\right)_{1 \leq i,j \leq 9}$
+		\item $\com(\sudokuP)$
+		\end{itemize} & Send all of\begin{itemize}
+		\item $\graphP$
+		\item $\com(i)$
+		\item $\com(\graphSolutionP)$
+		\end{itemize} & Send all of\begin{itemize}
+			\item $\hat{g} := [r]$
+			\item $\com(r)$
+		\end{itemize} & Send $[r]$\\
+	\hline
+	3. Pose Challenge by $V$&Ask for one of\begin{itemize}
+		\item permuted row $i$
+		\item permuted column $j$
+		\item permuted square $k$
+		\item permuted statement
+	\end{itemize}In total, this gives $9+9+9+1 = 28$ challenge types & Ask for one of\begin{itemize}
+		\item isomorphism $i\colon\graph \to \graphP$
+		\item Hamiltonian cycle in $\graphP$
+	\end{itemize} & Ask for one of\begin{itemize}
+		\item $r$
+		\item $x + r$
+	\end{itemize} and denote response by $\response$& Pick $c \leftarrow \mathbb{Z}_q$ uniformly at random.
+
+	Ask for $cx + r$ and denote response by $\response$\\
+	\hline
+	4. Respond to challenge by $P$ & \multicolumn{4}{c}{canonical: respond exactly with what was required}\\
+	\hline
+	5. Verify response by $V$ & Check\begin{itemize}
+		\item that no numbers occur twice in row, column, or square,
+		\item or that the permuted statement is in fact a permutation
+	\end{itemize} & Check \begin{itemize}
+		\item conditions on isomorphism,
+		\item or check that cycle is indeed Hamiltonian
+	\end{itemize} & Check \begin{itemize}
+		\item that indeed $\hat{g} = [\response]$
+		\item that $[\response] = y + \hat{g}$
+		
+		      namely if indeed $[x] = y$, then $y + \hat{g} = [x] + [r] = [x + r] = [\response]$
+	\end{itemize} & Check that $[\response] = cy + [r]$\\
+	\hline
+	\hline
+	\thead{Completeness}
+	
+	\centeredCell{$P$ can convince $V$ in case $P$ actually had a solution} & \multicolumn{4}{c}{Since step 4 above is canonical, provers can convince with prob. of $1$}\\
+	\hline
+	\thead{Soundness}
+	
+	\centeredCell{$P$ cannot convince $V$ without having a solution} & Probability of convincing w/o sol. is\[\approx \left(\frac{1}{28}\right)^{\numberOfIters}\] & Probability of convincing w/o sol. is \[
+		\left(\frac{1}{2}\right)^{\numberOfIters}
+	\] & Probability of convincing w/o sol. is \[
+	\left(\frac{1}{2}\right)^{\numberOfIters}
+	\] & todo\\
+	\hline
+	\thead{Zero Knowledge}
+	
+	\centeredCell{$V$ doesn't learn anything about the witness} & todo & In each round, $V$ learns \emph{either} a useless isomorphism \emph{or} a Hamiltonian cycle in $\graphP \cong \graph$. Since the graph isomorphism problem is believed to be hard, learning about such a cycle in $\graphP$ without learning the isomorphism is useless as well. & In each round, $V$ learns \emph{either} a useless random $r$ \emph{or} $x + r$. In the latter case, however, since $r \sim \mathcal{U}(\mathbb{Z}_q)$, we also have $(x + r) \sim \mathcal{U}(\mathbb{Z}_q)$\tnote{3} & In each round, $V$ only learns $[r]$ and $cx + r$ for a $c$ chosen by them. Due to DLOG assumed to be hard in $\mathbb{G}$, in the eyes of $V$ we have $r \sim \mathcal{U}(\mathbb{Z}_q)$ and hence $(cx + r) \sim \mathcal{U}(\mathbb{Z}_q)$\tnote{3}.\\
+	\hline\hline
+\end{tabularx}
+\begin{tablenotes}
+	\item[1] This means it contains a so-called Hamiltonian cycle that is a path visiting every node exactly once.
+	\item[2] Here, $v$ is effectively a sequence of edges, on which the isomorphism is applied elementwise.
+	\item[3] This is a simple lemma holding for arbitrary groups. The security of the OTP is based on this,\\usually phrased in the language of the group $(\{0,1\}^n, \oplus)$.\\[1em]
+	
+	\item \textbf{Author \& License}: Navid Roux. \doclicenseThis
+	
+	\item \textbf{Useful Links}\begin{itemize}
+		\item Sudoku (slightly different challenges are given, though)\begin{itemize}
+			\item \url{https://manishearth.github.io/blog/2016/08/10/interactive-sudoku-zero-knowledge-proof/}
+			\item \url{https://manishearth.github.io/sudoku-zkp/zkp.html}
+		\end{itemize}
+		\item Hamiltonian Cycles: \cite{wiki:zero-knowledge-proofs-hamiltonian-graphs}
+		\item Discrete Log (variant): \cite{wiki:zero-knowledge-proofs-discrete-log}
+		\item Discrete Log (Schnott variant)\begin{itemize}
+			\item Lecture Notes by Prof. Schröder on \enquote{Privacy-Preserving Cryptocurrencies} (currently non-public; only accessible to students enrolled in their course)
+			\item \cite{SchnorrZeroKnowledge}
+		\end{itemize}
+	\end{itemize}
+
+	\item \printbibliography
+\end{tablenotes}
+\end{threeparttable}
+
+\end{document}
