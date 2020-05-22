@@ -1,8 +1,8 @@
 % !TEX TS-program = latexmk -xelatex -shell-escape -silent -latexoption="-synctex=1" -f %
 % !TEX encoding = UTF-8 Unicode
-\documentclass[border=1cm,varwidth=38cm]{standalone}
+\documentclass[border=1cm,varwidth=37cm]{standalone}
 
-\usepackage{amsmath,amssymb,csquotes,mathtools,makecell,tabularx,titlesec}
+\usepackage{amsmath,amssymb,csquotes,mathtools,makecell,titlesec}
 \titleformat*{\section}{\Huge\bfseries}
 \titleformat*{\subsection}{\LARGE\bfseries}
 
@@ -112,7 +112,7 @@ Latest version always at \url{https://github.com/ComFreek/zero-knowledge-proofs-
 \vspace{3em}
 
 \begin{threeparttable}
-\begin{tabularx}{36.5cm}{m{4cm}|m{6cm}|m{6cm}|m{6cm}|m{6cm}|m{6cm}}
+\begin{tabular}{m{4cm}|m{6cm}|m{6cm}|m{6cm}|m{6cm}|m{6cm}}
 	\hline
 	&\thead{Sudoku}
 	&\thead{Hamiltonian Cycle}
@@ -288,7 +288,7 @@ Latest version always at \url{https://github.com/ComFreek/zero-knowledge-proofs-
 	%
 	%
 	%
-\end{tabularx}
+\end{tabular}
 \begin{tablenotes}
 	\item[1] This means it contains a so-called Hamiltonian cycle that is a path visiting every node exactly once. The problem of finding such a cycle is $\NP$-complete.
 	\item[2] Here, $v$ is effectively a sequence of edges, on which the isomorphism is applied elementwise.
