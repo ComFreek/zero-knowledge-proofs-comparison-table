@@ -105,7 +105,7 @@
 
 \section*{Comparison of Introductory Zero-Knowledge Proof Examples}
 
-{\LARGE By Navid Roux, 2020-05-22.}
+{\LARGE By Navid Roux, 2020-05-25.}
 
 Latest version always at \url{https://github.com/ComFreek/zero-knowledge-proofs-comparison-table}. \doclicenseText\doclicenseImage[imagewidth=5.5em]
 
@@ -159,7 +159,7 @@ Latest version always at \url{https://github.com/ComFreek/zero-knowledge-proofs-
 		\item Problem Statement
 		\item Solution
 	\end{enumerate}
-	&Pick set isomorphism $i$ on $\{1,\ldots,9\}$
+	&Pick set isomorphism $i\in \mathrm{Aut}(\{1,\ldots,9\})$
 	\begin{enumerate}
 		\item $\sudokuP := i[\sudoku]$ is solvable
 		\item $\sudokuSolutionP := i[\sudokuSolution]$ is solution to $\sudokuP$
@@ -181,17 +181,19 @@ Latest version always at \url{https://github.com/ComFreek/zero-knowledge-proofs-
 	2. Commitment by $P$
 	&Send all of
 	\begin{itemize}
-		\item $\left(\com(\Psi_{i,j})\right)_{1 \leq i,j \leq 9}$
+		\item $\left(\com(\sudokuSolutionP_{j,k})\right)_{1 \leq j,k \leq 9}$
 		\item $\com(\sudokuP)$
 	\end{itemize}
 	&Send all of
 	\begin{itemize}
+		\item $\graph$
 		\item $\graphP$
 		\item $\com(i)$
 		\item $\com(\graphSolutionP)$
 	\end{itemize}
 	&Send all of
 	\begin{itemize}
+		\item $\graph$
 		\item $\graphP$
 		\item $\com(i)$
 		\item $\com(\graphCertP)$
@@ -208,19 +210,19 @@ Latest version always at \url{https://github.com/ComFreek/zero-knowledge-proofs-
 	3. Pose Challenge by $V$
 	&Ask for one of
 	\begin{itemize}
-		\item permuted row $i$
-		\item permuted column $j$
-		\item permuted square $k$
+		\item the nine permuted rows
+		\item the nine permuted columns
+		\item the nine permuted squares
 		\item permuted statement
 	\end{itemize}
 	In total, this gives $9+9+9+1 = 28$ challenge types
 	&Ask for one of\begin{itemize}
 		\item isomorphism $i\colon\graph \to \graphP$
-		\item Hamiltonian cycle in $\graphP$
+		\item Hamiltonian cycle $\graphSolutionP$ in $\graphP$
 	\end{itemize}
 	& Ask for one of\begin{itemize}
 		\item isomorphism $i\colon\graph \to \graphP$
-		\item certificate for $\graphP \in L$
+		\item certificate $\graphCertP$ for $\graphP \in L$
 	\end{itemize}
 	& Ask for one of\begin{itemize}
 		\item $r$
@@ -280,7 +282,7 @@ Latest version always at \url{https://github.com/ComFreek/zero-knowledge-proofs-
 	\thead{Zero Knowledge}
 	
 	\centeredCell{$V$ doesn't learn anything about the witness}
-	& todo
+	& In each round, $V$ learns \emph{either} a Sudoku \enquote{building block} (row, column, square) of the permuted solution \emph{or} the permuted solution statement. The second case is obviously useless. In the first case, $V$ only learns what the round's permutation $i$ does on the numbers that the original puzzle $\sudoku$ had already pre-filled in the corresponding row, column, or square. In particular, nothing is learned about the solution entries, i.e. $\sudokuSolutionP\setminus\sudokuP$, due to the Sudoku property of every number (mapping) occurring exactly once in such a building block.
 	& In each round, $V$ learns \emph{either} a useless isomorphism \emph{or} a Hamiltonian cycle in $\graphP \cong \graph$. Since the graph isomorphism problem is believed to be hard, learning about such a cycle in $\graphP$ without learning the isomorphism is useless as well.
 	& Same argument as in the cell to the left.
 	& In each round, $V$ learns \emph{either} a useless random $r$ \emph{or} $x + r$. In the latter case, however, since $r \sim \mathcal{U}(\mathbb{Z}_q)$, we also have $(x + r) \sim \mathcal{U}(\mathbb{Z}_q)$\tnote{4}
@@ -303,7 +305,7 @@ Latest version always at \url{https://github.com/ComFreek/zero-knowledge-proofs-
 		\item \url{https://manishearth.github.io/blog/2016/08/10/interactive-sudoku-zero-knowledge-proof/}
 		\item \url{https://manishearth.github.io/sudoku-zkp/zkp.html}
 	\end{itemize}
-	\item Hamiltonian Cycles: \cite{wiki:zero-knowledge-proofs-hamiltonian-graphs}
+	\item Hamiltonian Cycles: \cite{wiki:zero-knowledge-proofs-hamiltonian-graphs}, apparently due to M. Blum
 	\item Discrete Log (variant): \cite{wiki:zero-knowledge-proofs-discrete-log}
 	\item Discrete Log (Schnott variant)\begin{itemize}
 		\item Lecture Notes by Prof. Schröder on \enquote{Privacy-Preserving Cryptocurrencies} (currently non-public; only accessible to students enrolled in their course)
