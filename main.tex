@@ -1,8 +1,10 @@
-% !TEX TS-program = latexmk -xelatex -shell-escape -silent -latexoption="-synctex=1" -f %
+% !TEX TS-program = xelatex
 % !TEX encoding = UTF-8 Unicode
-\documentclass[border=1cm,varwidth=37cm]{standalone}
+\documentclass[border=1cm,varwidth=43cm]{standalone}
 
-\usepackage{amsmath,amssymb,csquotes,mathtools,makecell,titlesec}
+\usepackage{academicons,amsmath,amssymb,csquotes,fontspec,mathtools,makecell,titlesec,xcolor}
+\definecolor{orcidlogocol}{HTML}{A6CE39}
+
 \titleformat*{\section}{\Huge\bfseries}
 \titleformat*{\subsection}{\LARGE\bfseries}
 
@@ -13,6 +15,10 @@
 	version={4.0}
 ]{doclicense}
 
+\renewcommand\title{Comparison of Introductory Zero-Knowledge Proof Examples}
+
+% Hyperref, Related Packages, and PDF Metadata
+% ======================================================================
 \begin{filecontents}[overwrite]{bibliography.bib}
 @misc{wiki:zero-knowledge-proofs-hamiltonian-graphs,
 	author = "{Wikipedia contributors}",
@@ -40,6 +46,35 @@
 	abstract="We present an efficient interactive identification scheme and a related signature scheme that are based on discrete logarithms and which are particularly suited for smart cards. Previous cryptoschemes, based on the discrete logarithm, have been proposed by El Gamal (1985), Chaum, Evertse, Graaf (1988), Beth (1988) and G{\"u}nter (1989). The new scheme comprises the following novel features.",
 	isbn="978-0-387-34805-6"
 }
+@inproceedings{BlumZeroKnowledge,
+	title     = {How to Prove a Theorem So No One Else Can Claim It},
+	author    = {Manuel Blum},
+	year      = {1986},
+	booktitle = {Proceedings of the International Congress of Mathematicians},
+	venue     = {},
+	publisher = {Almquist \& Wiksell},
+	location  = {Berkeley, California, USA},
+	pages     = {1444--1451},
+	url       = {http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.469.9048&rep=rep1&type=pdf}
+}
+@article{GMW_ZK_NP_languages,
+	author = {Goldreich, Oded and Micali, Silvio and Wigderson, Avi},
+	title = {Proofs That Yield Nothing but Their Validity or All Languages in NP Have Zero-Knowledge Proof Systems},
+	year = {1991},
+	issue_date = {July 1991},
+	publisher = {Association for Computing Machinery},
+	address = {New York, NY, USA},
+	volume = {38},
+	number = {3},
+	issn = {0004-5411},
+	url = {https://doi.org/10.1145/116825.116852},
+	doi = {10.1145/116825.116852},
+	journal = {J. ACM},
+	month = jul,
+	pages = {690–728},
+	numpages = {39},
+	keywords = {zero-knowledge, NP, graph isomorphism, interactive proofs, one-way functions, methodological design of protocols, proof systems, cryptographic protocols, fault tolerant distributed computing}
+}
 \end{filecontents}
 
 \usepackage[
@@ -54,7 +89,25 @@
 
 \addbibresource{bibliography.bib}
 
-\usepackage{hyperref}
+\usepackage[xetex]{hyperref}
+\hypersetup{
+	colorlinks = {true},
+	linkcolor = {black},
+	%
+	% PDF metadata
+	pdftitle = {\title},
+	pdfauthor = {Navid Roux},
+	pdfcreator = {XeLaTeX with hyperref},
+	pdfkeywords = {cryptography,zero-knowledge proofs,zk,zkp,comparison,study material,discrete log},
+	pdflang = {en-US},
+	pdfsubject = {Self-made Study Material for Crypto Course}
+}
+\usepackage{bookmark}
+\usepackage{cleveref}
+
+% Only color links in PDF
+\usepackage[ocgcolorlinks]{ocgx2}
+% ======================================================================
 
 % \thickbar command for thicker bars over symbols
 %
@@ -80,19 +133,25 @@
 \newcommand\NP{\complexityProblem{NP}}
 
 % Abbreviations for common variable symbols in the table
-% P stands for rerandomized
+% P stands for permuted/rerandomized
 \newcommand\sudoku{\Psi}
 \newcommand\sudokuSolution{\thickbar{\Psi}}
 \newcommand\sudokuP{\Psi'}
 \newcommand\sudokuSolutionP{\thickbar{\Psi'}}
 
-\newcommand\graph{G}
-\newcommand\graphSolution{v}
-\newcommand\graphP{G'}
-\newcommand\graphSolutionP{v'}
+\newcommand\threecolGraph{G}
+\newcommand\threecolColoring{w}
+\newcommand\threecolColoringP{w'}
 
-\newcommand\graphCert{w}
-\newcommand\graphCertP{w'}
+\newcommand\hamiltonianGraph{G}
+\newcommand\hamiltonianPath{w}
+\newcommand\hamiltonianGraphP{G'}
+\newcommand\hamiltonianPathP{w'}
+
+\newcommand\graphpropGraph{G}
+\newcommand\graphpropGraphP{G'}
+\newcommand\graphpropWitness{w}
+\newcommand\graphpropWitnessP{w'}
 
 \newcommand\numberOfIters{\#\text{iter}}
 \newcommand\response{\text{resp.}}
@@ -100,21 +159,25 @@
 % Configure table commands
 \renewcommand\theadfont{\bfseries}
 \newcommand{\centeredCell}[1]{\centering#1\arraybackslash}
+\newcommand\notApplicable{-/-}
+\newcommand\notApplicableCell{\centeredCell{\notApplicable}}
+\newcommand{\iterFrac}[2]{\[\left(\frac{#1}{#2}\right)^{\numberOfIters}\]}
 
 \begin{document}
 
-\section*{Comparison of Introductory Zero-Knowledge Proof Examples}
+\section*{\title}
 
-{\LARGE By Navid Roux, 2020-05-25.}
+{\LARGE By Navid Roux \href{http://orcid.org/0000-0002-8348-2441}{\textcolor{orcidlogocol}{\aiOrcid} \hspace{2mm} orcid.org/0000-0002-8348-2441}, 2020-06-10.}
 
 Latest version always at \url{https://github.com/ComFreek/zero-knowledge-proofs-comparison-table}. \doclicenseText\doclicenseImage[imagewidth=5.5em]
 
 \vspace{3em}
 
 \begin{threeparttable}
-\begin{tabular}{m{4cm}|m{6cm}|m{6cm}|m{6cm}|m{6cm}|m{6cm}}
+\begin{tabular}{m{4cm}|m{6cm}|m{6cm}|m{6cm}|m{6cm}|m{6cm}|m{6cm}}
 	\hline
 	&\thead{Sudoku}
+	&\thead{\complexityProblem{3-COL}}
 	&\thead{Hamiltonian Cycle}
 	&\thead{Any \enquote{hard} Graph Property}
 	&\thead{Discrete Log (variant)}
@@ -126,10 +189,11 @@ Latest version always at \url{https://github.com/ComFreek/zero-knowledge-proofs-
 		
 	\centeredCell{public or sent from $P$ to $V$}
 	&\centeredCell{Partial sudoku $\sudoku$ is solvable}
-	&\centeredCell{Graph $\graph$ is Hamiltonian\tnote{1}}
+	&\centeredCell{Graph $\threecolGraph$ is 3-colorable}
+	&\centeredCell{Graph $\hamiltonianGraph$ is Hamiltonian\tnote{1}}
 	&Let $L \in \NP$ be any  graph-isomorphism-invariant graph property believed to be hard.\tnote{3}\vspace{1em}
 	
-	\centeredCell{Graph $\graph \in L$}
+	\centeredCell{Graph $\graphpropGraph \in L$}
 	&Let $\mathbb{G}$ of order $q$ and $y \in \mathbb{Z}_q$ be fixed.\vspace{1em}
 	
 	\centeredCell{I know $x \in \mathbb{Z}_{q}$ such that \[[x] = y\]}
@@ -143,8 +207,9 @@ Latest version always at \url{https://github.com/ComFreek/zero-knowledge-proofs-
 	
 	\centeredCell{only known to $P$}
 	&\centeredCell{Solution $\sudokuSolution$}
-	&\centeredCell{Hamiltonian cycle $\graphSolution$}
-	&\centeredCell{Certificate $\graphCert$}
+	&\centeredCell{3-coloring $\threecolColoring$}
+	&\centeredCell{Hamiltonian cycle $\hamiltonianPath$}
+	&\centeredCell{Certificate $\graphpropWitness$}
 	&\centeredCell{$x$}
 	&\centeredCell{$x$}\\\hline\hline
 	%
@@ -159,20 +224,25 @@ Latest version always at \url{https://github.com/ComFreek/zero-knowledge-proofs-
 		\item Problem Statement
 		\item Solution
 	\end{enumerate}
-	&Pick set isomorphism $i\in \mathrm{Aut}(\{1,\ldots,9\})$
+	&Pick set isomorphism $i\colon\{1,\ldots,9\}\to\{1,\ldots,9\}$
 	\begin{enumerate}
 		\item $\sudokuP := i[\sudoku]$ is solvable
 		\item $\sudokuSolutionP := i[\sudokuSolution]$ is solution to $\sudokuP$
 	\end{enumerate}
-	&Pick graph isomorphism $i\colon\graph \to \graphP$ (just relabel vertices)
+	&Pick color permutation $i\colon\{1,2,3\}\to\{1,2,3\}$
 	\begin{enumerate}
-		\item $\graphP := i[\graph]$ is Hamiltonian
-		\item $\graphSolutionP := i[\graphSolution]$ is Hamiltonian cycle for $\graphP$\tnote{2}
+		\item \notApplicable (choose same graph $\threecolGraph$)
+		\item $\threecolColoringP := i[\threecolColoring]$ is alternative 3-coloring for $\threecolGraph$
 	\end{enumerate}
-	& Pick graph isomorphism $i\colon\graph \to \graphP$ (just relabel vertices)
+	&Pick graph isomorphism $i\colon\hamiltonianGraph \to \hamiltonianGraphP$ (just relabel vertices)
 	\begin{enumerate}
-		\item $\graphP := i[\graph] \in L$
-		\item $\graphCertP := i[\graphCert]$ is certificate for $\graphP$
+		\item $\hamiltonianGraphP := i[\hamiltonianGraph]$ is Hamiltonian
+		\item $\hamiltonianPathP := i[\hamiltonianPath]$ is Hamiltonian cycle for $\hamiltonianGraphP$\tnote{2}
+	\end{enumerate}
+	& Pick graph isomorphism $i\colon\graphpropGraph \to \graphpropGraphP$ (just relabel vertices)
+	\begin{enumerate}
+		\item $\graphpropGraphP := i[\graphpropGraph] \in L$
+		\item $\graphpropWitnessP := i[\graphpropWitness]$ is certificate for $\graphpropGraphP$
 	\end{enumerate}
 	& Pick $r \leftarrow \mathbb{Z}_{q}$ uniformly at random & Pick $r \leftarrow \mathbb{Z}_{q}$ uniformly at random\\\hline
 	%
@@ -186,17 +256,22 @@ Latest version always at \url{https://github.com/ComFreek/zero-knowledge-proofs-
 	\end{itemize}
 	&Send all of
 	\begin{itemize}
-		\item $\graph$
-		\item $\graphP$
-		\item $\com(i)$
-		\item $\com(\graphSolutionP)$
+		\item $\threecolGraph$
+		\item $\left(\com(\threecolColoringP_v)\right)_{v \in V(\threecolGraph)}$ -- coloring of each vertex
 	\end{itemize}
 	&Send all of
 	\begin{itemize}
-		\item $\graph$
-		\item $\graphP$
+		\item $\hamiltonianGraph$
+		\item $\hamiltonianGraphP$
 		\item $\com(i)$
-		\item $\com(\graphCertP)$
+		\item $\com(\hamiltonianPathP)$
+	\end{itemize}
+	&Send all of
+	\begin{itemize}
+		\item $\graphpropGraph$
+		\item $\graphpropGraphP$
+		\item $\com(i)$
+		\item $\com(\graphpropWitnessP)$
 	\end{itemize}
 	&Send all of
 	\begin{itemize}
@@ -216,13 +291,14 @@ Latest version always at \url{https://github.com/ComFreek/zero-knowledge-proofs-
 		\item permuted statement
 	\end{itemize}
 	In total, this gives $9+9+9+1 = 28$ challenge types
+	&Pick edge $(u,v) \leftarrow E(\threecolGraph)$ uniformly at random and ask for coloring of $u$ and $v$
 	&Ask for one of\begin{itemize}
-		\item isomorphism $i\colon\graph \to \graphP$
-		\item Hamiltonian cycle $\graphSolutionP$ in $\graphP$
+		\item isomorphism $i\colon\hamiltonianGraph \to \hamiltonianGraphP$
+		\item Hamiltonian cycle $\hamiltonianPathP$ in $\hamiltonianGraphP$
 	\end{itemize}
 	& Ask for one of\begin{itemize}
-		\item isomorphism $i\colon\graph \to \graphP$
-		\item certificate $\graphCertP$ for $\graphP \in L$
+		\item isomorphism $i\colon\graphpropGraph \to \graphpropGraphP$
+		\item certificate $\graphpropWitnessP$ for $\graphpropGraphP \in L$
 	\end{itemize}
 	& Ask for one of\begin{itemize}
 		\item $r$
@@ -235,7 +311,7 @@ Latest version always at \url{https://github.com/ComFreek/zero-knowledge-proofs-
 	%
 	%
 	4. Respond to challenge by $P$
-	& \multicolumn{5}{c}{canonical: respond exactly with what was asked}\\\hline
+	& \multicolumn{6}{c}{canonical: respond exactly with what was asked}\\\hline
 	%
 	%
 	%
@@ -244,6 +320,7 @@ Latest version always at \url{https://github.com/ComFreek/zero-knowledge-proofs-
 		\item that no numbers occur twice in row, column, or square,
 		\item or that the permuted statement is in fact a permutation
 	\end{itemize}
+	& Check that coloring of $u$ and $v$ are distinct
 	& Check \begin{itemize}
 		\item conditions on isomorphism,
 		\item or check that cycle is indeed Hamiltonian
@@ -265,17 +342,31 @@ Latest version always at \url{https://github.com/ComFreek/zero-knowledge-proofs-
 	\thead{Completeness}
 	
 	\centeredCell{$P$ can convince $V$ in case $P$ actually had a solution}
-	& \multicolumn{5}{c}{Since step 4 above is canonical, provers can convince with prob. of $1$}\\\hline
+	& \multicolumn{6}{c}{Since step 4 above is canonical, provers can convince with prob. of $1$}\\\hline
 	%
 	%
 	%
 	\thead{Soundness}
 	
-	\centeredCell{$P$ cannot convince $V$ without having a solution. Shown are the prob. of convincing w/o having a sol.}
-	& \[\approx \left(\frac{1}{28}\right)^{\numberOfIters}\] & \[\left(\frac{1}{2}\right)^{\numberOfIters}\]
-	& \[\left(\frac{1}{2}\right)^{\numberOfIters}\]
-	& \[\left(\frac{1}{2}\right)^{\numberOfIters}\]
-	& todo\\\hline
+	\centeredCell{$P$ cannot convince $V$ for statements not in the language. Shown are the success prob. of still trying to do so}
+	& \iterFrac{27}{28}
+	& \iterFrac{|E(\threecolGraph)|-1}{|E(\threecolGraph)|}
+	& \iterFrac{1}{2}
+	& \iterFrac{1}{2}
+	& \notApplicableCell
+	& \notApplicableCell\\\hline
+	%
+	%
+	%
+	\thead{Soundness of Knowledge}
+	
+	\centeredCell{$P$ cannot convince $V$ without having a witness. Shown are the success prob. of still trying to do so}
+	& \notApplicableCell
+	& \notApplicableCell
+	& \notApplicableCell
+	& \notApplicableCell
+	& \iterFrac{1}{2}
+	& \iterFrac{1}{2}\\\hline
 	%
 	%
 	%
@@ -283,7 +374,8 @@ Latest version always at \url{https://github.com/ComFreek/zero-knowledge-proofs-
 	
 	\centeredCell{$V$ doesn't learn anything about the witness}
 	& In each round, $V$ learns \emph{either} a Sudoku \enquote{building block} (row, column, square) of the permuted solution \emph{or} the permuted solution statement. The second case is obviously useless. In the first case, $V$ only learns what the round's permutation $i$ does on the numbers that the original puzzle $\sudoku$ had already pre-filled in the corresponding row, column, or square. In particular, nothing is learned about the solution entries, i.e. $\sudokuSolutionP\setminus\sudokuP$, due to the Sudoku property of every number (mapping) occurring exactly once in such a building block.
-	& In each round, $V$ learns \emph{either} a useless isomorphism \emph{or} a Hamiltonian cycle in $\graphP \cong \graph$. Since the graph isomorphism problem is believed to be hard, learning about such a cycle in $\graphP$ without learning the isomorphism is useless as well.
+	& In each round, $V$ just learns the \emph{round-dependent} colorings of two nodes: $\threecolColoringP_u$ and $\threecolColoringP_v$. This is useless information as such and can furthermore -- due to the rerandomization -- not be correlated with colorings learnt in other rounds. Note that if $V$ asked instead for colorings of three vertices, then the learned colorings could very well possess more information content. Namely, it isn't granted anymore that all three vertices must have pairwise distinct colors attached to them.
+	& In each round, $V$ learns \emph{either} a useless isomorphism \emph{or} a Hamiltonian cycle in $\hamiltonianGraphP \cong \hamiltonianGraph$. Since the graph isomorphism problem is believed to be hard, learning about such a cycle in $\hamiltonianGraphP$ without learning the isomorphism is useless as well.
 	& Same argument as in the cell to the left.
 	& In each round, $V$ learns \emph{either} a useless random $r$ \emph{or} $x + r$. In the latter case, however, since $r \sim \mathcal{U}(\mathbb{Z}_q)$, we also have $(x + r) \sim \mathcal{U}(\mathbb{Z}_q)$\tnote{4}
 	& In each round, $V$ only learns $[r]$ and $cx + r$ for a $c$ chosen by them. Due to DLOG assumed to be hard in $\mathbb{G}$, in the eyes of $V$ we have $r \sim \mathcal{U}(\mathbb{Z}_q)$ and hence $(cx + r) \sim \mathcal{U}(\mathbb{Z}_q)$\tnote{4}.\\\hline\hline
@@ -294,7 +386,7 @@ Latest version always at \url{https://github.com/ComFreek/zero-knowledge-proofs-
 \begin{tablenotes}
 	\item[1] This means it contains a so-called Hamiltonian cycle that is a path visiting every node exactly once. The problem of finding such a cycle is $\NP$-complete.
 	\item[2] Here, $v$ is effectively a sequence of edges, on which the isomorphism is applied elementwise.
-	\item[3] Take for example $\complexityProblem{HAMILTONIAN}$, $\complexityProblem{3-COL}$, or $\complexityProblem{CLIQUE}$. From $L \in \NP$ it follows that for every $\graph \in L$ there is a certificate $w$ for membership of length $\poly(|\graph|)$ that can be verified in $\poly(|\graph|)$ time.\\By graph-isomorphism invariance we demand that for $\graph \cong \graphP$ witnessed by an isomorphim $i \colon \graph \to \graphP$, certificates $\graphCert$ for $\graph \in L$ can be transformed to certificates $\graphCertP$ for $\graphP \in L$. We denote the latter by $i[\graphCert]$.
+	\item[3] Take for example $\complexityProblem{HAMILTONIAN}$, $\complexityProblem{3-COL}$, or $\complexityProblem{CLIQUE}$. From $L \in \NP$ it follows that for every $\graphpropGraph \in L$ there is a certificate $w$ for membership of length $\poly(|\graphpropGraph|)$ that can be verified in $\poly(|\graphpropGraph|)$ time.\\By graph-isomorphism invariance we demand that for $\graphpropGraph \cong \graphpropGraphP$ witnessed by an isomorphim $i \colon \graphpropGraph \to \graphpropGraphP$, certificates $\graphpropWitness$ for $\graphpropGraph \in L$ can be transformed to certificates $\graphpropWitnessP$ for $\graphpropGraphP \in L$. We denote the latter by $i[\graphpropWitness]$.
 	\item[4] This is a simple lemma holding for arbitrary groups. The security of the OTP is based on this,\\usually phrased in the language of the group $(\{0,1\}^n, \oplus)$.
 \end{tablenotes}
 \end{threeparttable}
@@ -305,7 +397,9 @@ Latest version always at \url{https://github.com/ComFreek/zero-knowledge-proofs-
 		\item \url{https://manishearth.github.io/blog/2016/08/10/interactive-sudoku-zero-knowledge-proof/}
 		\item \url{https://manishearth.github.io/sudoku-zkp/zkp.html}
 	\end{itemize}
-	\item Hamiltonian Cycles: \cite{wiki:zero-knowledge-proofs-hamiltonian-graphs}, apparently due to M. Blum
+	\item \complexityProblem{3-COL}: \cite{GMW_ZK_NP_languages}
+	\item Hamiltonian Cycle: \cite{wiki:zero-knowledge-proofs-hamiltonian-graphs}, originally due to \cite{BlumZeroKnowledge}
+	\item Any \enquote{hard} Graph Property: sketched on my own; \cite{BlumZeroKnowledge} describes this, too
 	\item Discrete Log (variant): \cite{wiki:zero-knowledge-proofs-discrete-log}
 	\item Discrete Log (Schnott variant)\begin{itemize}
 		\item Lecture Notes by Prof. Schröder on \enquote{Privacy-Preserving Cryptocurrencies} (currently non-public; only accessible to students enrolled in their course)
