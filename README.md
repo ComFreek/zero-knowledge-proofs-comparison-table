@@ -6,7 +6,7 @@ Privacy-preserving cryptocurrencies use zero-knowledge proofs to hide the identi
 ## Comments (retrospective)
 
 - Don't take the column with "any hard graph property" too seriously, I think it's flawed
-- I might be wrong at places about terminology. Cryptographers have a strange family of definitions given by the grammar `[zero-knowledge] {argument,proof} [of knowledge]`.
+- I might be wrong at places about terminology. As far as I understand, cryptographers employ a -- weird on first sight -- family of definitions given by the regex `(zero-knowledge)? (argument|proof) (of knowledge)?`.
 
   I think "argument vs proof" qualifies whether you consider soundness probabilistically or not.
   "zero-knowledge" qualifies that there is a simulator that can simulate your protocol "from the outside" with "rewinding Turing machines".
